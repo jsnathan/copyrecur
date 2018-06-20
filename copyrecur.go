@@ -32,8 +32,10 @@ func CopyFile(source string, dest string) (err error) {
 }
 
 // Recursively copies a directory tree, attempting to preserve permissions. 
-// Source directory must exist, destination directory must *not* exist. 
-func CopyDir(source string, dest string) (err error) {
+// Source directory must exist; to overwrite files in destination directory,
+// if it exists, specify overwrite = true. if destination does not exist,
+// it will be created.
+func CopyDir(source string, dest string, overwrite bool) (err error) {
 	// get properties of source dir
 	fi, err := os.Stat(source)
 	if err != nil {
@@ -44,7 +46,7 @@ func CopyDir(source string, dest string) (err error) {
 	}
 	// ensure dest dir does not already exist
 	_, err = os.Open(dest)
-	if !os.IsNotExist(err) {
+	if !os.IsNotExist(err) && !overwrite {
 		return &CustomError{"Destination already exists"}
 	}
 	// create dest dir
